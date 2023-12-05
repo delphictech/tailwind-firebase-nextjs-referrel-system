@@ -1,7 +1,8 @@
 'use client';
 
 import { Card, Metric, Text, Title, BarList, Flex, Grid } from '@tremor/react';
-import MainCard, { MainCardParams } from '@/app/components/card';
+import MainCard from '@/app/components/card';
+import { Event } from '@/types/event';
 
 const website = [
   { name: '/home', value: 1230 },
@@ -45,7 +46,7 @@ const data = [
 ];
 
 
-const cardData: MainCardParams[] = [
+const cardData: Event[] = [
   {
     href: "/",
     name: "Average Ground Coverage Ratio (GCR)",
