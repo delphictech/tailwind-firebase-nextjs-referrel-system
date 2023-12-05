@@ -46,20 +46,7 @@ const data = [
 ];
 
 
-const cardData: Event[] = [
-  {
-    href: "/",
-    name: "Average Ground Coverage Ratio (GCR)",
-    type: "mlp-teams",
-    date: "15.11.2022",
-  },
-  {
-    href: "/",
-    name: "Average Performance Ratio",
-    type: "mix-n-match",
-    date: "Today",
-  },
-];
+const cardData: Event[] = [];
 
 export default function PlaygroundPage() {
   return (
@@ -92,8 +79,8 @@ export default function PlaygroundPage() {
       </Grid>
       {/* <Chart /> */}
       <Card className="mt-8">
-        <Title>Performance</Title>
-        <Text>Comparison between Sales and Profit</Text>
+        <Title>Events</Title>
+        <Text>Explore the following events</Text>
         <Grid numItemsSm={1} numItemsLg={2} className="gap-6 mt-4">
           {cardData.map((item) => <MainCard key={item.name} {...item} />)}
         </Grid>

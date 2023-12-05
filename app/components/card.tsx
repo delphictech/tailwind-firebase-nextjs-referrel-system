@@ -38,9 +38,9 @@ const CardIcons: Record<Event["type"], IconProps["icon"]> = {
  * @param {(MainCardParams & CardProps)} { color, title, icon, date,  ...params }
  * @return {*} 
  */
-export default function MainCard({ type, href, name, date,  ...params }: Event & CardProps) {
+export default function MainCard({ type, name, date,  ...params }: Event & CardProps) {
     return (
-        <Link href={href} target="_blank">
+        <Link href="/" target="_blank">
             <Card decoration="left" decorationColor={CardColors[type]} key={name} className="h-fit" {...params}>
             <Flex justifyContent="between">
                 <Flex justifyContent="start" className="space-x-2">
