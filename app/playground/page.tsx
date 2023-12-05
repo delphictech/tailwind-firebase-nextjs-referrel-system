@@ -2,6 +2,8 @@
 
 import { Card, Metric, Text, Title, BarList, Flex, Grid } from '@tremor/react';
 import Chart from '@/app/playground/chart';
+import { ArrowDownCircleIcon, BoltIcon } from '@heroicons/react/24/solid';
+import MainCard, { MainCardParams } from '@/app/components/card';
 
 const website = [
   { name: '/home', value: 1230 },
@@ -44,6 +46,24 @@ const data = [
   // }
 ];
 
+
+const cardData: MainCardParams[] = [
+  {
+    href: "/",
+    title: "Average Ground Coverage Ratio (GCR)",
+    icon: ArrowDownCircleIcon,
+    color: "rose",
+    date: "15.11.2022",
+  },
+  {
+    href: "/",
+    title: "Average Performance Ratio",
+    icon: BoltIcon,
+    color: "indigo",
+    date: "Today",
+  },
+];
+
 export default function PlaygroundPage() {
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">
@@ -73,7 +93,14 @@ export default function PlaygroundPage() {
           </Card>
         ))}
       </Grid>
-      <Chart />
+      {/* <Chart /> */}
+      <Card className="mt-8">
+        <Title>Performance</Title>
+        <Text>Comparison between Sales and Profit</Text>
+        <Grid numItemsSm={1} numItemsLg={2} className="gap-6 mt-4">
+          {cardData.map((item) => <MainCard href={item.href} key={item.title} title={item.title} color={item.color} date={item.date} icon={item.icon}  />)}
+        </Grid>
+      </Card>
     </main>
   );
 }
