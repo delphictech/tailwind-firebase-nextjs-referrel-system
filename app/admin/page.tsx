@@ -19,12 +19,6 @@ export default async function Profile({ searchParams }: { searchParams: { callba
     // fetch the session and user
     const session = await auth();
     const user = await getUserWithEmail(session?.user?.email, true);
-
-    // set the invited user object if the user was invited
-    if (searchParams.senderEmail && user?.email) await updateInvitedUser(searchParams.senderEmail, user.email, "accepted");
-
-    // fetch the invited users
-    const invitedUsers: Partial<InvitedUser>[] = session?.user?.email ? await getInvitedUsers(session?.user?.email) : [];
     
   	/**
      * Define the submitting form action
@@ -49,7 +43,7 @@ export default async function Profile({ searchParams }: { searchParams: { callba
           </h2>
          <form action={createFakeCompetitions}>
             <SubmitButton className="w-full mt-6" loadingText="Creating...">
-              Creating Competitions
+              Create Fake Competitions
             </SubmitButton>
       </form>
       <SignOutButton className="w-full mt-4" type="button" variant="secondary" email={user?.email} />
