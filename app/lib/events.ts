@@ -1,5 +1,6 @@
 import { fetchCollection } from "@/app/lib/firebase";
 import { Event } from "@/types/event";
+import { Timestamp } from "firebase-admin/firestore";
 
 export /**
  * Function will fetch all of the available events
@@ -8,7 +9,7 @@ export /**
  */
 const fetchEvents = async (serialize = true) => {
     // fetch the events
-    const allEventsSnapshot = await fetchCollection("events").where("date", ">=", new Date()).get();
+    const allEventsSnapshot = await fetchCollection("events").where("timestamp", ">=", Timestamp.now()).orderBy("timestamp").get();
     
     const events = allEventsSnapshot.docs.map((doc) => {
         const dateString = doc.data()?.timestamp?.valueOf();

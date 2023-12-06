@@ -8,7 +8,7 @@ export interface Location {
 };
 
 export interface Event {
-    registrationLink: LinkProps["href"];
+    link: LinkProps["href"];
     name?: string;
     description?: string;
     timestamp?: Timestamp;

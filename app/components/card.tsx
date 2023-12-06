@@ -1,6 +1,6 @@
+import EventIcon from "@/app/components/event-icon";
 import { Event } from "@/types/event";
-import { MapPinIcon, SparklesIcon, StarIcon, TrophyIcon, UserIcon, UsersIcon } from "@heroicons/react/24/solid";
-import { Bold, Card, CardProps, Divider, Flex, Icon, IconProps, Text, Title } from "@tremor/react";
+import { Bold, Card, CardProps, Divider, Flex, Metric, Text } from "@tremor/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,48 +29,38 @@ const CardTypeText: Record<Event["type"], string> = {
  * @param {(MainCardParams & CardProps)} { color, title, icon, date,  ...params }
  * @return {*} 
  */
-export default function MainCard({ type = "pickup", name, timestamp,  ...params }: Partial<Omit<Event, "date">> & CardProps & { timestamp?: string }) {
-    // define the card icons
-    const CardIcons: Record<Event["type"], IconProps["icon"]> = {
-        "mlp-teams": TrophyIcon,
-        "doubles": UsersIcon,
-        "singles": UserIcon,
-        "mix-n-match": SparklesIcon,
-        "training": StarIcon,
-        "pickup": MapPinIcon,
-    };
-
+export default function MainCard({ type = "pickup", ...item }: { id: string } & Partial<Omit<Event, "date">> & { timestamp?: string }) {
     return (
         <Link href="/" target="_blank">
-            <Card decoration="left" decorationColor={CardColors[type]} key={name} className="h-fit" {...params}>
+            <Card decoration="left" decorationColor={CardColors[type]} key={item.id} className="h-fit">
+            <Metric className="truncate mb-4">
+                {item.name}
+            </Metric>
             <Flex justifyContent="between">
                 <Flex justifyContent="start" className="space-x-2">
-                    <Icon variant="outlined" icon={CardIcons[type]} size="lg" color={CardColors[type]} />
+                    <EventIcon type={type} />
                     <div>
                         <Text>
                             <Bold>{CardTypeText[type]}</Bold>
                         </Text>
-                        <Text>{400} points available</Text>
+                        <Text>{Math.floor(item.points || 0)} points available</Text>
                     </div>
                 </Flex>
-            </Flex>
-            <Title className="truncate mt-3">
-                {name}
-            </Title>
-            <Flex justifyContent="start" className="space-x-2 mt-2">
-                <Image width={25} height={25} src={`https://api.dicebear.com/7.x/initials/png?seed=Felix&radius=50`} alt="avatar" />
-                <Text>Hosted by John Doe</Text>
             </Flex>
             <Divider />
             <Flex alignItems="end" justifyContent="between">
                 <div>
                     <Text>
-                        <Bold>Boston, MA</Bold>
+                        <Bold>{item.location?.name}</Bold>
                     </Text>
-                    <Text>June 5th at 4:00 pm</Text>
+                    <Text>{item.timestamp}</Text>
+                    <Flex justifyContent="start" className="space-x-2 mt-0.5">
+                        <Image width={25} height={25} src={`https://api.dicebear.com/7.x/initials/png?seed=Felix&radius=50`} alt="avatar" />
+                        <Text>Hosted by {item.hostID}</Text>
+                    </Flex>
                 </div>
                 <Text>
-                    <Bold>$25</Bold> / player
+                    <Bold>${Math.floor(item.price || 0) / 100}</Bold> / player
                 </Text>
             </Flex>
             </Card>

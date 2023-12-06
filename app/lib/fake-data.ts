@@ -56,7 +56,7 @@ const createFakeEvent = async (hostID: string, writeToFirebase = false) => {
     const eventName: string[] = ["Classic", "Championship", "Showdown", "Extravaganza", "Showcase", "Spectacle", "Gala", "Tournament", "Challenge", "Jamboree"];
 
     const event: Required<Event> & { fake: true } = {
-        registrationLink: "#",
+        link: "#",
         name: `${getRandomElement(nouns)} ${getRandomElement(locations)} ${getRandomElement(eventName)}`,
         timestamp: generateRandomTimestampWithinDays(15),
         type: getRandomElement(eventTypes),
