@@ -1,3 +1,4 @@
+import { Event } from "@/types/event";
 import { Invoice } from "@/types/invoices";
 import { InvitedUser, User } from "@/types/user";
 import { initFirestore } from "@auth/firebase-adapter";
@@ -26,7 +27,7 @@ export const firestore = initFirestore({
  */
 export interface CollectionTypes {
   "users": User,
-  "invoice": Invoice,
+  "events": Event,
 };
 
 /**
