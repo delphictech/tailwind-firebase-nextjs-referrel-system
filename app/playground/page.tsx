@@ -82,7 +82,7 @@ export default async function PlaygroundPage() {
         <Title>Events</Title>
         <Text>Explore the following events</Text>
         <Grid numItemsSm={1} numItemsLg={events.length ? 2 : 1} className="gap-6 mt-4">
-          {events.length ? events.map((item) => <MainCard key={item.id} {...item} timestamp={typeof item.timestamp === "string" ? item.timestamp : undefined} />) : <Text className='text-center my-8'><Italic>No Upcoming Events</Italic></Text>}
+          {events.length ? events.map((item) => <MainCard key={item.id} {...item} timestamp={typeof item.timestamp === "string" ? item?.timestamp : undefined} />) : <Text className='text-center my-8'><Italic>No Upcoming Events</Italic></Text>}
         </Grid>
       </Card>
     </main>

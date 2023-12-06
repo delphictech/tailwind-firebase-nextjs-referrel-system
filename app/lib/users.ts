@@ -135,3 +135,13 @@ const updateInvitedUser = async (userEmail: string, invitedEmail: string, invite
     });
     return { id: newInvitedUser.id, email: invitedEmail, status: invitedStatus };
 }
+
+export /**
+ * Function to get the user id
+ *
+ * @param {string} id
+ */
+const getUserByID = async (id: string) => {
+    const userSnapshot = await fetchCollection("users").doc(id).get();
+    return { ...userSnapshot.data(), id: userSnapshot.id };
+}

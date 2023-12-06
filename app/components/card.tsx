@@ -1,8 +1,12 @@
 import EventIcon from "@/app/components/event-icon";
+import { getUserByID } from "@/app/lib/users";
+import { formatFirebaseTimestamp } from "@/app/utils/date";
 import { Event } from "@/types/event";
 import { Bold, Card, CardProps, Divider, Flex, Metric, Text } from "@tremor/react";
+import { Timestamp } from "firebase-admin/firestore";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const CardColors: Record<Event["type"], CardProps["decorationColor"]> = {
     "mlp-teams": "orange",
@@ -29,7 +33,12 @@ const CardTypeText: Record<Event["type"], string> = {
  * @param {(MainCardParams & CardProps)} { color, title, icon, date,  ...params }
  * @return {*} 
  */
-export default function MainCard({ type = "pickup", ...item }: { id: string } & Partial<Omit<Event, "date">> & { timestamp?: string }) {
+export default async function MainCard({ type = "pickup", ...item }: { id: string } & Partial<Omit<Event, "date">> & { timestamp?: string }) {
+    // get host object
+    const hostUser = await getUserByID(item.hostID || "");
+
+    // get date string
+    const formattedDateString = formatFirebaseTimestamp(item.timestamp || "");
     return (
         <Link href="/" target="_blank">
             <Card decoration="left" decorationColor={CardColors[type]} key={item.id} className="h-fit">
@@ -53,11 +62,13 @@ export default function MainCard({ type = "pickup", ...item }: { id: string } & 
                     <Text>
                         <Bold>{item.location?.name}</Bold>
                     </Text>
-                    <Text>{item.timestamp}</Text>
-                    <Flex justifyContent="start" className="space-x-2 mt-0.5">
-                        <Image width={25} height={25} src={`https://api.dicebear.com/7.x/initials/png?seed=Felix&radius=50`} alt="avatar" />
-                        <Text>Hosted by {item.hostID}</Text>
-                    </Flex>
+                    <Text>{formattedDateString}</Text>
+                    <Suspense>
+                        <Flex justifyContent="start" className="space-x-2 mt-0.5">
+                            <Image width={25} height={25} src={`https://api.dicebear.com/7.x/initials/png?seed=${hostUser.firstName}&radius=50`} alt="avatar" />
+                            <Text>Hosted by {hostUser.firstName} {hostUser.lastName}</Text>
+                        </Flex>
+                    </Suspense>
                 </div>
                 <Text>
                     <Bold>${Math.floor(item.price || 0) / 100}</Bold> / player

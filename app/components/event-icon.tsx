@@ -24,10 +24,10 @@ const CardIcons: Record<Event["type"], IconProps["icon"]> = {
 };
 
 /**
- * Main card for displaying data
+ * Component will return the event icon type
  *
  * @export
- * @param {(MainCardParams & CardProps)} { color, title, icon, date,  ...params }
+ * @param {({ type?: Event["type"] } & Partial<IconProps>)} { type = "pickup", ...params }
  * @return {*} 
  */
 export default function EventIcon({ type = "pickup", ...params } : { type?: Event["type"] } & Partial<IconProps>) {
