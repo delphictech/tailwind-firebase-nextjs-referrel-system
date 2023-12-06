@@ -1,6 +1,7 @@
 import { EmailExpirationAge, auth } from "@/app/auth/config";
 import { fetchCollection, fetchSubcollection, mutateCollection, mutateSubcollection } from "@/app/lib/firebase";
 import { InvitedUser, User } from "@/types/user";
+import { Filter, OrderByDirection, WhereFilterOp } from "firebase-admin/firestore";
 
 export /**
  * Function will update the user object
@@ -144,4 +145,40 @@ export /**
 const getUserByID = async (id: string) => {
     const userSnapshot = await fetchCollection("users").doc(id).get();
     return { ...userSnapshot.data(), id: userSnapshot.id };
-}
+};
+
+export /**
+ * Function to fetch users from the collection
+ *
+ * @param {keyof User} [orderByField="points"]
+ * @param {OrderByDirection} [directionStr="desc"]
+ * @param {number} [lim=10]
+ * @param {boolean} [serialize=true]
+ * @return {*} 
+ */
+const getUsers = async (orderByField: keyof User = "points", directionStr: OrderByDirection = "desc", lim: number = 10, serialize = true) => {
+    const userSnapshot = await fetchCollection("users").orderBy(orderByField, directionStr).limit(lim).get();
+
+    // loop through and serialize the objects if necessary
+    const userDataList = userSnapshot.docs.map((doc) => {
+        const docData = { ...doc.data(), id: doc.id };
+        if (serialize) delete docData.emailVerified;
+        return docData;
+    });
+
+    return userDataList;
+};
+
+export /**
+ * Function will get the count of the executed query
+ *
+ * @template T
+ * @param {T} field
+ * @param {WhereFilterOp} filterType
+ * @param {User[T]} value
+ * @return {*} 
+ */
+const getUserCount = async <T extends keyof User>(field: T, filterType: WhereFilterOp, value: User[T]) => {
+    const userCount = await fetchCollection("users").where(field, filterType, value).count().get();
+    return userCount.data().count;
+};

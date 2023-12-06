@@ -1,6 +1,9 @@
-import { Card, Metric, Text, Title, BarList, Flex, Grid, Italic } from '@tremor/react';
+import { Card, Metric, Text, Title, BarList, Flex, Grid, Italic, BarListProps, Icon } from '@tremor/react';
 import MainCard from '@/app/components/card';
 import { fetchEvents } from '@/app/lib/events';
+import { getUsers } from '@/app/lib/users';
+import Image from 'next/image';
+import { JsxElement } from 'typescript';
 
 const website = [
   { name: '/home', value: 1230 },
@@ -39,33 +42,61 @@ export default async function PlaygroundPage() {
   // fetch all events
   const events = await fetchEvents();
 
+  // fetch all users by points
+  const users = await getUsers("points", "desc", 5, true);
+  const formattedUsers = users.map((user) => {
+    return { name: user.name || "", value: Math.floor(user.points || 0), };
+  });
+
+  // fetch all host users by host points
+  const hosts = await getUsers("hostPoints", "desc", 5, true);
+  const formattedHosts = hosts.map((user) => {
+    return { name: `${user.name} - ${user.id}`, value: Math.floor(user.points || 0), };
+  });
+  console.log("formatted hosts", formattedHosts);
+
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">
       <Grid numItemsSm={2} numItemsLg={2} className="gap-6">
-        {data.map((item) => (
-          <Card key={item.category}>
-            <Title>{item.category}</Title>
-            <Flex
-              justifyContent="start"
-              alignItems="baseline"
-              className="space-x-2"
-            >
-              <Metric>{item.stat}</Metric>
-              <Text>Total users</Text>
-            </Flex>
-            <Flex className="mt-6">
-              <Text>Users</Text>
-              <Text className="text-right">Points</Text>
-            </Flex>
-            <BarList
-              data={item.data}
-              valueFormatter={(number: number) =>
-                Intl.NumberFormat('us').format(number).toString()
-              }
-              className="mt-2"
-            />
-          </Card>
-        ))}
+      <Card key="points">
+          <Title>Top Users</Title>
+          <Flex
+            justifyContent="start"
+            alignItems="baseline"
+            className="space-x-2"
+          >
+            <Metric>100</Metric>
+            <Text>Total users</Text>
+          </Flex>
+          <Flex className="mt-6">
+            <Text>Users</Text>
+            <Text className="text-right">Points</Text>
+          </Flex>
+          <BarList
+            data={formattedUsers}
+            className="mt-2"
+          />
+        </Card>
+        <Card key="points">
+          <Title>Top Hosts</Title>
+          <Flex
+            justifyContent="start"
+            alignItems="baseline"
+            className="space-x-2"
+          >
+            <Metric>100</Metric>
+            <Text>Total hosts</Text>
+          </Flex>
+          <Flex className="mt-6">
+            <Text>Hosts</Text>
+            <Text className="text-right">Points Awarded</Text>
+          </Flex>
+          <BarList
+            data={formattedHosts}
+            className="mt-2"
+          />
+        </Card>
+
       </Grid>
       {/* <Chart /> */}
       <Card className="mt-8">

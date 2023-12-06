@@ -6,7 +6,7 @@ import { createFakeEvents, createFakeUsers, deleteFakeData } from "@/app/lib/fak
 
 
 /**
- * Main profile page
+ * Main admin screen
  *
  * @export
  * @return {*} 
