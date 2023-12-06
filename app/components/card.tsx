@@ -68,8 +68,11 @@ export default async function MainCard({ type = "pickup", ...item }: { id: strin
                             <Text>Hosted by {hostUser.firstName} {hostUser.lastName}</Text>
                         </Flex>
                     </Suspense>
+                    <Text className="flex sm:hidden mt-1">
+                        <Bold>${Math.floor(item.price || 0) / 100}</Bold> / player
+                    </Text>
                 </div>
-                <Text>
+                <Text className="hidden sm:flex">
                     <Bold>${Math.floor(item.price || 0) / 100}</Bold> / player
                 </Text>
             </Flex>
