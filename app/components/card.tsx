@@ -63,8 +63,8 @@ export default async function MainCard({ type = "pickup", ...item }: { id: strin
                     </Text>
                     <Text>{formattedDateString}</Text>
                     <Suspense>
-                        <Flex justifyContent="start" className="space-x-2 mt-0.5">
-                            <Image width={25} height={25} src={`https://api.dicebear.com/7.x/initials/png?seed=${hostUser.firstName}&radius=50`} alt="avatar" />
+                        <Flex justifyContent="start" className="space-x-1 mt-0.5">
+                            <Image width={20} height={20} src={`https://api.dicebear.com/7.x/initials/png?seed=${hostUser.firstName}&radius=50`} alt="avatar" />
                             <Text>Hosted by {hostUser.firstName} {hostUser.lastName}</Text>
                         </Flex>
                     </Suspense>

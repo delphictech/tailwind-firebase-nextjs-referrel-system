@@ -1,59 +1,59 @@
-import { Card, Metric, Text, Title, BarList, Flex, Grid, Italic, BarListProps, Icon } from '@tremor/react';
+import { Card, Metric, Text, Title, BarList, Flex, Grid, Italic, BarListProps, Icon, Divider, Bold } from '@tremor/react';
 import MainCard from '@/app/components/card';
 import { fetchEvents } from '@/app/lib/events';
 import { getUsers } from '@/app/lib/users';
 import Image from 'next/image';
-import { JsxElement } from 'typescript';
+import { Event } from '@/types/event';
+import { formatTimestampSeconds } from '@/app/utils/date';
 
-const website = [
-  { name: '/home', value: 1230 },
-  { name: '/contact', value: 751 },
-  { name: '/gallery', value: 471 },
-  { name: '/august-discount-offer', value: 280 },
-  { name: '/case-studies', value: 78 }
-];
+const groupAndSortEventsByDay = <T extends Partial<Event & { timestampSeconds: number }>>(events: T[]) => {
+  const grouped: { [day: string]: T[] } = {};
 
-const shop = [
-  { name: '/home', value: 453 },
-  { name: '/imprint', value: 351 },
-  { name: '/shop', value: 271 },
-  { name: '/pricing', value: 191 }
-];
+  // Group events by day
+  events.forEach((event) => {
+    const localDateString = formatTimestampSeconds(event.timestampSeconds, true);
 
-const data = [
-  {
-    category: 'Website',
-    stat: '10,234',
-    data: website
-  },
-  {
-    category: 'Online Shop',
-    stat: '12,543',
-    data: shop
-  },
-  // {
-  //   category: 'Mobile App',
-  //   stat: '2,543',
-  //   data: app
-  // }
-];
+    if (!grouped[localDateString]) {
+      grouped[localDateString] = [];
+    }
+
+    grouped[localDateString].push(event);
+  });
+
+  // Convert grouped object to an array of objects with day and events
+  const groupedArray = Object.keys(grouped).map((day) => ({
+    day,
+    events: grouped[day],
+  }));
+
+  // Sort the array by day in ascending order (oldest day first)
+  groupedArray.sort((a, b) => {
+    const dateA = new Date(a.day).getTime();
+    const dateB = new Date(b.day).getTime();
+    return dateA - dateB;
+  });
+
+  return groupedArray;
+}
 
 export default async function PlaygroundPage() {
-  // fetch all events
+  // fetch all events and group them by day
   const events = await fetchEvents();
+  const groupedEvents = groupAndSortEventsByDay(events);
 
   // fetch all users by points
   const users = await getUsers("points", "desc", 5, true);
   const formattedUsers = users.map((user) => {
-    return { name: user.name || "", value: Math.floor(user.points || 0), };
+    const imageIcon = () => <Image className='mr-1' width={20} height={20} src={user.image || ""} alt='avatar' />;
+    return { name: `${user.name}`, value: Math.floor(user.points || 0), icon: imageIcon };
   });
 
   // fetch all host users by host points
   const hosts = await getUsers("hostPoints", "desc", 5, true);
   const formattedHosts = hosts.map((user) => {
-    return { name: `${user.name} - ${user.id}`, value: Math.floor(user.points || 0), };
+    const imageIcon = () => <Image className='mr-1' width={20} height={20} src={user.image || ""} alt='avatar' />;
+    return { name: `${user.name}`, value: Math.floor(user.hostPoints || 0), icon: imageIcon };
   });
-  console.log("formatted hosts", formattedHosts);
 
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">
@@ -69,11 +69,12 @@ export default async function PlaygroundPage() {
             <Text>Total users</Text>
           </Flex>
           <Flex className="mt-6">
-            <Text>Users</Text>
+            <Text>User</Text>
             <Text className="text-right">Points</Text>
           </Flex>
           <BarList
             data={formattedUsers}
+            valueFormatter={(val: number) => val.toLocaleString()}
             className="mt-2"
           />
         </Card>
@@ -88,11 +89,12 @@ export default async function PlaygroundPage() {
             <Text>Total hosts</Text>
           </Flex>
           <Flex className="mt-6">
-            <Text>Hosts</Text>
+            <Text>Host</Text>
             <Text className="text-right">Points Awarded</Text>
           </Flex>
           <BarList
             data={formattedHosts}
+            valueFormatter={(val: number) => val.toLocaleString()}
             className="mt-2"
           />
         </Card>
@@ -101,10 +103,18 @@ export default async function PlaygroundPage() {
       {/* <Chart /> */}
       <Card className="mt-8">
         <Title>Events</Title>
-        <Text>Explore the following events</Text>
-        <Grid numItemsSm={1} numItemsLg={events.length ? 2 : 1} className="gap-6 mt-4">
-          {events.length ? events.map((item) => <MainCard key={item.id} {...item} />) : <Text className='text-center my-8'><Italic>No Upcoming Events</Italic></Text>}
-        </Grid>
+        <Text>Viewing events from <Bold>{groupedEvents.at(0)?.day}</Bold> to <Bold>{groupedEvents.at(groupedEvents.length - 1)?.day}</Bold></Text>
+        <div className='space-y-8 mt-8'>
+        {groupedEvents.length ? groupedEvents.map((group) => (
+          <div key={group.day}>
+            <Title>{group.day}</Title>
+            <Divider className='my-4' />
+            <Grid numItemsSm={1} numItemsLg={2} className="gap-6">
+              {group.events.map((item) => <MainCard key={item.id} {...item} />)}
+            </Grid>
+          </div>
+        )) : <Text className='text-center my-8'><Italic>No Upcoming Events</Italic></Text>}
+        </div>
       </Card>
     </main>
   );
