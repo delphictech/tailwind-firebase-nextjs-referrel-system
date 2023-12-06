@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase-admin/firestore";
 import { LinkProps } from "next/link";
 
 export interface Location {
@@ -10,7 +11,7 @@ export interface Event {
     registrationLink: LinkProps["href"];
     name?: string;
     description?: string;
-    date?: Date;
+    timestamp?: Timestamp;
     price?: number;
     points?: number;
     hostID: string;

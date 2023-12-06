@@ -1,8 +1,9 @@
 import { auth } from "@/app/auth/config";
 import { CollectionTypes, fetchCollection, mutateCollection } from "@/app/lib/firebase";
 import { Event } from "@/types/event";
+import { Timestamp } from "firebase-admin/firestore";
 
-const generateRandomDateWithinDays = (days: number): Date => {
+const generateRandomTimestampWithinDays = (days: number): Timestamp => {
     const currentDate = new Date();
     const futureDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000); // Convert days to milliseconds
   
@@ -11,7 +12,7 @@ const generateRandomDateWithinDays = (days: number): Date => {
   
     // Apply the random number of milliseconds to the future date
     const randomDate = new Date(futureDate.getTime() + randomMilliseconds);
-    return randomDate;
+    return Timestamp.fromDate(randomDate);
 };
 
 /**
@@ -57,7 +58,7 @@ const createFakeEvent = async (hostID: string, writeToFirebase = false) => {
     const event: Required<Event> & { fake: true } = {
         registrationLink: "#",
         name: `${getRandomElement(nouns)} ${getRandomElement(locations)} ${getRandomElement(eventName)}`,
-        date: generateRandomDateWithinDays(15),
+        timestamp: generateRandomTimestampWithinDays(15),
         type: getRandomElement(eventTypes),
         description: "Not generated yet",
         price: getRandomNumber(100, 3500),

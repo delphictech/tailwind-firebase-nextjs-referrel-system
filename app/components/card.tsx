@@ -1,8 +1,8 @@
 import { Event } from "@/types/event";
 import { MapPinIcon, SparklesIcon, StarIcon, TrophyIcon, UserIcon, UsersIcon } from "@heroicons/react/24/solid";
-import { Bold, Card, CardProps, Divider, Flex, Icon, IconProps, Metric, Text, Title } from "@tremor/react";
+import { Bold, Card, CardProps, Divider, Flex, Icon, IconProps, Text, Title } from "@tremor/react";
 import Image from "next/image";
-import Link, { LinkProps } from "next/link";
+import Link from "next/link";
 
 const CardColors: Record<Event["type"], CardProps["decorationColor"]> = {
     "mlp-teams": "orange",
@@ -22,15 +22,6 @@ const CardTypeText: Record<Event["type"], string> = {
     "pickup": "Informal Pickup",
 };
 
-const CardIcons: Record<Event["type"], IconProps["icon"]> = {
-    "mlp-teams": TrophyIcon,
-    "doubles": UsersIcon,
-    "singles": UserIcon,
-    "mix-n-match": SparklesIcon,
-    "training": StarIcon,
-    "pickup": MapPinIcon,
-};
-
 /**
  * Main card for displaying data
  *
@@ -38,7 +29,17 @@ const CardIcons: Record<Event["type"], IconProps["icon"]> = {
  * @param {(MainCardParams & CardProps)} { color, title, icon, date,  ...params }
  * @return {*} 
  */
-export default function MainCard({ type, name, date,  ...params }: Event & CardProps) {
+export default function MainCard({ type = "pickup", name, timestamp,  ...params }: Partial<Omit<Event, "date">> & CardProps & { timestamp?: string }) {
+    // define the card icons
+    const CardIcons: Record<Event["type"], IconProps["icon"]> = {
+        "mlp-teams": TrophyIcon,
+        "doubles": UsersIcon,
+        "singles": UserIcon,
+        "mix-n-match": SparklesIcon,
+        "training": StarIcon,
+        "pickup": MapPinIcon,
+    };
+
     return (
         <Link href="/" target="_blank">
             <Card decoration="left" decorationColor={CardColors[type]} key={name} className="h-fit" {...params}>

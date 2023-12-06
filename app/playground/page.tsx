@@ -1,8 +1,8 @@
-'use client';
-
-import { Card, Metric, Text, Title, BarList, Flex, Grid } from '@tremor/react';
+import { Card, Metric, Text, Title, BarList, Flex, Grid, Italic } from '@tremor/react';
 import MainCard from '@/app/components/card';
+import { fetchCollection } from '@/app/lib/firebase';
 import { Event } from '@/types/event';
+import { fetchEvents } from '@/app/lib/events';
 
 const website = [
   { name: '/home', value: 1230 },
@@ -45,10 +45,10 @@ const data = [
   // }
 ];
 
+export default async function PlaygroundPage() {
+  // fetch all events
+  const events = await fetchEvents();
 
-const cardData: Event[] = [];
-
-export default function PlaygroundPage() {
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">
       <Grid numItemsSm={2} numItemsLg={2} className="gap-6">
@@ -81,8 +81,8 @@ export default function PlaygroundPage() {
       <Card className="mt-8">
         <Title>Events</Title>
         <Text>Explore the following events</Text>
-        <Grid numItemsSm={1} numItemsLg={2} className="gap-6 mt-4">
-          {cardData.map((item) => <MainCard key={item.name} {...item} />)}
+        <Grid numItemsSm={1} numItemsLg={events.length ? 2 : 1} className="gap-6 mt-4">
+          {events.length ? events.map((item) => <MainCard key={item.id} {...item} />) : <Text className='text-center my-8'><Italic>No Upcoming Events</Italic></Text>}
         </Grid>
       </Card>
     </main>
