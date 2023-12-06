@@ -1,7 +1,5 @@
 import { Card, Metric, Text, Title, BarList, Flex, Grid, Italic } from '@tremor/react';
 import MainCard from '@/app/components/card';
-import { fetchCollection } from '@/app/lib/firebase';
-import { Event } from '@/types/event';
 import { fetchEvents } from '@/app/lib/events';
 
 const website = [
@@ -17,14 +15,6 @@ const shop = [
   { name: '/imprint', value: 351 },
   { name: '/shop', value: 271 },
   { name: '/pricing', value: 191 }
-];
-
-const app = [
-  { name: '/shop', value: 789 },
-  { name: '/product-features', value: 676 },
-  { name: '/about', value: 564 },
-  { name: '/login', value: 234 },
-  { name: '/downloads', value: 191 }
 ];
 
 const data = [
@@ -61,11 +51,11 @@ export default async function PlaygroundPage() {
               className="space-x-2"
             >
               <Metric>{item.stat}</Metric>
-              <Text>Total views</Text>
+              <Text>Total users</Text>
             </Flex>
             <Flex className="mt-6">
-              <Text>Pages</Text>
-              <Text className="text-right">Views</Text>
+              <Text>Users</Text>
+              <Text className="text-right">Points</Text>
             </Flex>
             <BarList
               data={item.data}

@@ -1,6 +1,7 @@
 import { auth } from "@/app/auth/config";
 import { CollectionTypes, fetchCollection, mutateCollection } from "@/app/lib/firebase";
 import { Event } from "@/types/event";
+import { User } from "@/types/user";
 import { Timestamp } from "firebase-admin/firestore";
 
 const generateRandomTimestampWithinDays = (days: number): Timestamp => {
@@ -120,3 +121,61 @@ const deleteFakeData = async (collectionName: keyof CollectionTypes) => {
 
     return deletedDocs;
 };
+
+
+export /**
+ * Function will generate a fake user
+ *
+ * @return {*} 
+ */
+const createFakeUser = async (writeToFirebase = false) => {
+    // generate a fake name
+    const firstNames: string[] = ['John', 'Jane', 'Bob', 'Alice', 'David', "Todd", "Don"];
+    const lastNames: string[] = ['Smith', 'Johnson', 'Brown', 'Jones', 'Miller', "Hill"];
+    const firstName = getRandomElement(firstNames);
+    const lastName = getRandomElement(lastNames);
+
+    // generate a fake email
+    const user: Omit<Omit<Required<User>, "emailVerified">, "id"> & { fake: true } = {
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`,
+        points: getRandomNumber(1, 500),
+        hostPoints: getRandomNumber(1, 20500),
+        lastLocation: {
+            name: "Boston, MA",
+            longitude: 100,
+            latitude: 100,
+        },
+        email: "fake@example.com",
+        image: `https://api.dicebear.com/7.x/initials/png?seed=${firstName.at(0)}${lastName}&radius=50`,
+        fake: true,
+    };
+
+    // write to firebase
+    if (writeToFirebase) {
+        const firebaseEvent = await mutateCollection("users").add(user);
+        console.log(`Wrote document ${firebaseEvent.id}`);
+    };
+
+    return user;
+};
+
+export /**
+ * Function to create the fake users
+ *
+ * @param {number} [number=10]
+ * @param {boolean} [writeToFirebase=false]
+ * @return {*} 
+ */
+const createFakeUsers = async (number = 10, writeToFirebase = false) => {
+    // check that the user has permissions
+    const session = await auth();
+    if (!session?.user?.email) throw Error("Creating fake events: user is not authenticated");
+
+    // fetch fake data for events, promise.all
+    const fakeUserPromises = Array.from({ length: number }, () => createFakeUser(writeToFirebase));
+    const fakeUsers = await Promise.all(fakeUserPromises);
+
+    return fakeUsers;
+}

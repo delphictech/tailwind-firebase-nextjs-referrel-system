@@ -2,7 +2,7 @@ import SignOutButton from "@/app/components/signout-button";
 import SubmitButton from "@/app/components/submit-form-button";
 import { auth } from "@/app/auth/config";
 import { getUserWithEmail } from "@/app/lib/users";
-import { createFakeEvents, deleteFakeData } from "@/app/lib/fake-data";
+import { createFakeEvents, createFakeUsers, deleteFakeData } from "@/app/lib/fake-data";
 
 
 /**
@@ -39,6 +39,28 @@ export default async function Admin() {
       }
     };
 
+    const createUsers = async () => {
+      "use server";
+      try {
+        const writeToFirebase = true;
+        const events = await createFakeUsers(10, writeToFirebase);
+        console.log(`Created ${events.length} events and wrote to firebase: ${writeToFirebase}`);
+      } catch (e: any) {
+        console.warn("error with creating fake competitions", e);
+        throw Error(e);
+      }
+    };
+    const deleteFakeUsers = async () => {
+      "use server";
+      try {
+        const deletedWriteResult = await deleteFakeData("users");
+        console.log(`Deleted ${deletedWriteResult.length} users`);
+      } catch (e: any) {
+        console.warn("error with creating fake competitions", e);
+        throw Error(e);
+      }
+    };
+
     return (
       <div className="flex-grow mx-auto w-full max-w-lg p-6">
           <div className="mx-auto w-full max-w-lg p-6">
@@ -53,6 +75,16 @@ export default async function Admin() {
           <form action={deleteFakeCompetitions}>
             <SubmitButton color="red" className="w-full mt-6" loadingText="Creating...">
               Delete Fake Competitions
+            </SubmitButton>
+          </form>
+          <form action={createUsers}>
+            <SubmitButton className="w-full mt-6" loadingText="Creating...">
+              Create Fake Users
+            </SubmitButton>
+          </form>
+          <form action={deleteFakeUsers}>
+            <SubmitButton color="red" className="w-full mt-6" loadingText="Creating...">
+              Delete Fake Users
             </SubmitButton>
           </form>
       <SignOutButton className="w-full mt-12" type="button" variant="secondary" email={user?.email} />
