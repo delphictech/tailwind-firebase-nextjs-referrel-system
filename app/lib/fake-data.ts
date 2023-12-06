@@ -1,5 +1,5 @@
 import { auth } from "@/app/auth/config";
-import { fetchCollection, mutateCollection } from "@/app/lib/firebase";
+import { CollectionTypes, fetchCollection, mutateCollection } from "@/app/lib/firebase";
 import { Event } from "@/types/event";
 
 const generateRandomDateWithinDays = (days: number): Date => {
@@ -72,7 +72,10 @@ const createFakeEvent = async (hostID: string, writeToFirebase = false) => {
     };
 
     // write to firebase
-    if (writeToFirebase) await mutateCollection("events").add(event);
+    if (writeToFirebase) {
+        const firebaseEvent = await mutateCollection("events").add(event);
+        console.log(`Wrote document ${firebaseEvent.id}`);
+    };
 
     return event;
 };
@@ -82,7 +85,7 @@ export /**
  *
  * @param {number} [number=10]
  */
-const createFakeEvents = async (number = 10) => {
+const createFakeEvents = async (number = 10, writeToFirebase = false) => {
     // check that the user has permissions
     const session = await auth();
     if (!session?.user?.email) throw Error("Creating fake events: user is not authenticated");
@@ -94,7 +97,7 @@ const createFakeEvents = async (number = 10) => {
     const userDataList = existingUsersSnapshot.docs.map((userDoc) => ({ ...userDoc.data(), id: userDoc.id }));
 
     // fetch fake data for events, promise.all
-    const fakeEventPromises = Array.from({ length: number }, () => createFakeEvent(getRandomElement(userDataList).id));
+    const fakeEventPromises = Array.from({ length: number }, () => createFakeEvent(getRandomElement(userDataList).id, writeToFirebase));
     const fakeEvents = await Promise.all(fakeEventPromises);
 
     return fakeEvents;
@@ -105,11 +108,14 @@ export /**
  * Function will delete all the fake events
  *
  */
-const deleteFakeEvents = async () => {
+const deleteFakeData = async (collectionName: keyof CollectionTypes) => {
     // fetch alll the fake events
-    const eventSnapshots = await fetchCollection("events").where("fake", "==", true).get();
-    const deletePromises = eventSnapshots.docs.map((eventDoc) => eventDoc.ref.delete());
+    const eventSnapshots = await fetchCollection(collectionName).where("fake", "==", true).get();
+    const deletePromises = eventSnapshots.docs.map(async (doc) => {
+        doc.ref.delete();
+        console.log(`Deleted document ${doc.id} from ${collectionName} collection`);
+    });
     const deletedDocs = await Promise.all(deletePromises);
 
     return deletedDocs;
-}
+};

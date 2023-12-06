@@ -2,7 +2,7 @@ import SignOutButton from "@/app/components/signout-button";
 import SubmitButton from "@/app/components/submit-form-button";
 import { auth } from "@/app/auth/config";
 import { getUserWithEmail } from "@/app/lib/users";
-import { createFakeEvents, deleteFakeEvents } from "@/app/lib/fake-data";
+import { createFakeEvents, deleteFakeData } from "@/app/lib/fake-data";
 
 
 /**
@@ -19,8 +19,9 @@ export default async function Admin() {
     const createCompetitions = async () => {
       "use server";
       try {
-        const events = await createFakeEvents();
-        console.log(`Created ${events.length} events`);
+        const writeToFirebase = true;
+        const events = await createFakeEvents(10, writeToFirebase);
+        console.log(`Created ${events.length} events and wrote to firebase: ${writeToFirebase}`);
       } catch (e: any) {
         console.warn("error with creating fake competitions", e);
         throw Error(e);
@@ -30,7 +31,7 @@ export default async function Admin() {
     const deleteFakeCompetitions = async () => {
       "use server";
       try {
-        const deletedWriteResult = await deleteFakeEvents();
+        const deletedWriteResult = await deleteFakeData("events");
         console.log(`Deleted ${deletedWriteResult.length} events`);
       } catch (e: any) {
         console.warn("error with creating fake competitions", e);
@@ -48,8 +49,13 @@ export default async function Admin() {
             <SubmitButton className="w-full mt-6" loadingText="Creating...">
               Create Fake Competitions
             </SubmitButton>
-      </form>
-      <SignOutButton className="w-full mt-4" type="button" variant="secondary" email={user?.email} />
+          </form>
+          <form action={deleteFakeCompetitions}>
+            <SubmitButton color="red" className="w-full mt-6" loadingText="Creating...">
+              Delete Fake Competitions
+            </SubmitButton>
+          </form>
+      <SignOutButton className="w-full mt-12" type="button" variant="secondary" email={user?.email} />
       </div>
     </div>
     )
