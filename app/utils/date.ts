@@ -1,6 +1,4 @@
-export const formatFirebaseTimestamp = (firebaseTimestamp: string): string => {
-    const timestampInMillis = parseFloat(firebaseTimestamp) / 1000; // Convert to milliseconds
-  
+export const formatTimestampSeconds = (seconds?: number): string => {
     const options: Intl.DateTimeFormatOptions = {
       month: 'long',
       day: 'numeric',
@@ -9,7 +7,7 @@ export const formatFirebaseTimestamp = (firebaseTimestamp: string): string => {
       hour12: true,
     };
   
-    const formattedDate = new Date(timestampInMillis).toLocaleString('en-US', options);
+    const formattedDate = seconds ? new Date(seconds * 1000).toLocaleString('en-US', options) : new Date().toLocaleString('en-US', options);
   
     return formattedDate.replace(/(\d+)(st|nd|rd|th)/, '$1<sup>$2</sup>'); // Add superscript to day
   }

@@ -1,9 +1,8 @@
 import EventIcon from "@/app/components/event-icon";
 import { getUserByID } from "@/app/lib/users";
-import { formatFirebaseTimestamp } from "@/app/utils/date";
+import { formatTimestampSeconds } from "@/app/utils/date";
 import { Event } from "@/types/event";
 import { Bold, Card, CardProps, Divider, Flex, Metric, Text } from "@tremor/react";
-import { Timestamp } from "firebase-admin/firestore";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -33,12 +32,12 @@ const CardTypeText: Record<Event["type"], string> = {
  * @param {(MainCardParams & CardProps)} { color, title, icon, date,  ...params }
  * @return {*} 
  */
-export default async function MainCard({ type = "pickup", ...item }: { id: string } & Partial<Omit<Event, "date">> & { timestamp?: string }) {
+export default async function MainCard({ type = "pickup", ...item }: { id: string } & Partial<Omit<Event, "timestamp">> & { timestampSeconds?: number }) {
     // get host object
     const hostUser = await getUserByID(item.hostID || "");
 
     // get date string
-    const formattedDateString = formatFirebaseTimestamp(item.timestamp || "");
+    const formattedDateString = formatTimestampSeconds(item.timestampSeconds);
     return (
         <Link href="/" target="_blank">
             <Card decoration="left" decorationColor={CardColors[type]} key={item.id} className="h-fit">
